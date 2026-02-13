@@ -1,9 +1,58 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Sea Urchin Catcher</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@2.19.1/build/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: url('https://example.com/tasmanian-ocean-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Sea Urchin Catcher!</h1>
-    <p>Catch sea urchins in the best way possible!</p>
+    <script>
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var diver;
+        var urchins;
+        var score = 0;
+        var lives = 3;
+
+        function preload() {
+            game.load.image('diver', 'https://example.com/diver.png');
+            game.load.image('urchin', 'https://example.com/urchin.png');
+            game.load.image('kelp', 'https://example.com/kelp.png');
+        }
+
+        function create() {
+            diver = game.add.sprite(game.world.centerX, game.world.centerY, 'diver');
+            game.physics.arcade.enable(diver);
+            diver.body.collideWorldBounds = true;
+
+            urchins = game.add.group();
+            urchins.enableBody = true;
+            game.time.events.loop(1500, dropUrchin, this);
+        }
+
+        function dropUrchin() {
+            var urchin = urchins.create(Math.random() * game.world.width, 0, 'urchin');
+            urchin.body.gravity.y = 300;
+            urchin.checkWorldBounds = true;
+            urchin.outOfBoundsKill = true;
+        }
+
+        function update() {
+            // logic to manage collisions and scoring
+            game.physics.arcade.overlap(diver, urchins, catchUrchin, null, this);
+        }
+
+        function catchUrchin(diver, urchin) {
+            score += 10;
+            urchin.kill();
+            // update lives and other game logic
+        }
+    </script>
 </body>
 </html>
