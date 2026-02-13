@@ -3,61 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sea Urchin Catcher</title>
+    <title>Sea Urchin Catcher Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-        }
-        h1 {
-            color: #333;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
         }
         canvas {
-            border: 2px solid #333;
-        }
-        .controls {
-            margin: 20px;
-        }
-        .button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #218838;
+            border: 1px solid #fff;
         }
     </style>
 </head>
 <body>
-    <h1>Sea Urchin Catcher</h1>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div class="controls">
-        <button class="button" id="startButton">Start Game</button>
-    </div>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let gameInterval;
 
-        function startGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Game initialization logic goes here
-            gameInterval = setInterval(updateGame, 1000 / 60);
+        let score = 0;
+        let seaurchins = [];
+
+        class SeaUrchin {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 20;
+                this.color = 'rgba(255, 165, 0, 0.8)';
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            isHit(mouseX, mouseY) {
+                const dist = Math.hypot(mouseX - this.x, mouseY - this.y);
+                return dist < this.radius;
+            }
         }
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Game updating logic goes here
+        function addSeaUrchin() {
+            const x = Math.random() * (canvas.width - 40) + 20;
+            const y = Math.random() * (canvas.height - 40) + 20;
+            seaurchins.push(new SeaUrchin(x, y));
         }
 
-        document.getElementById('startButton').addEventListener('click', startGame);
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            seaurchins.forEach(urchin => urchin.draw());
+            ctx.font = '30px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 30);
+        }
+
+        function update() {
+            if (seaurchins.length < 5) addSeaUrchin();
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            seaurchins.forEach((urchin, index) => {
+                if (urchin.isHit(mouseX, mouseY)) {
+                    score++;
+                    seaurchins.splice(index, 1);
+                }
+            });
+        });
+
+        update();
     </script>
 </body>
 </html>
