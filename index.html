@@ -1,58 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sea Urchin Catcher</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@2.19.1/build/phaser.min.js"></script>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
-            overflow: hidden;
-            background: url('https://example.com/tasmanian-ocean-background.jpg') no-repeat center center fixed;
-            background-size: cover;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        canvas {
+            border: 2px solid #333;
+        }
+        .controls {
+            margin: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
+    <h1>Sea Urchin Catcher</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="controls">
+        <button class="button" id="startButton">Start Game</button>
+    </div>
     <script>
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-        var diver;
-        var urchins;
-        var score = 0;
-        var lives = 3;
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameInterval;
 
-        function preload() {
-            game.load.image('diver', 'https://example.com/diver.png');
-            game.load.image('urchin', 'https://example.com/urchin.png');
-            game.load.image('kelp', 'https://example.com/kelp.png');
+        function startGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Game initialization logic goes here
+            gameInterval = setInterval(updateGame, 1000 / 60);
         }
 
-        function create() {
-            diver = game.add.sprite(game.world.centerX, game.world.centerY, 'diver');
-            game.physics.arcade.enable(diver);
-            diver.body.collideWorldBounds = true;
-
-            urchins = game.add.group();
-            urchins.enableBody = true;
-            game.time.events.loop(1500, dropUrchin, this);
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Game updating logic goes here
         }
 
-        function dropUrchin() {
-            var urchin = urchins.create(Math.random() * game.world.width, 0, 'urchin');
-            urchin.body.gravity.y = 300;
-            urchin.checkWorldBounds = true;
-            urchin.outOfBoundsKill = true;
-        }
-
-        function update() {
-            // logic to manage collisions and scoring
-            game.physics.arcade.overlap(diver, urchins, catchUrchin, null, this);
-        }
-
-        function catchUrchin(diver, urchin) {
-            score += 10;
-            urchin.kill();
-            // update lives and other game logic
-        }
+        document.getElementById('startButton').addEventListener('click', startGame);
     </script>
 </body>
 </html>
